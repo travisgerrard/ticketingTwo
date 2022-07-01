@@ -20,4 +20,7 @@ jobs:
       - run: docker push travisgerrard/auth
       - uses: digitalocean/action-doctl@v2
         with:
-          token:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save veggily
+      - run: kubectl rollout restart deployment auth-depl
+            
