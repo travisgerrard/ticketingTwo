@@ -1,0 +1,12 @@
+name: tests-meals
+
+on:
+  pull_request:
+     paths:
+       - 'meals/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd meals && npm install && npm run test:ci
