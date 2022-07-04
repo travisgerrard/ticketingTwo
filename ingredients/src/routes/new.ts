@@ -5,8 +5,10 @@ import {
 } from '@tgticketing/common';
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
+import { IngredientCreatedPublisher } from '../events/publishers/ingredient-created-publisher';
 import { Ingredient } from '../models/ingredient';
 import { Meal } from '../models/meal';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -41,6 +43,14 @@ router.post(
       meal,
     });
     await ingredient.save();
+
+    // new IngredientCreatedPublisher(natsWrapper.client).publish({
+    //   id: ingredient.id,
+    //   version: ingredient.version,
+    //   title: ingredient.title,
+    //   meal: ingredient.meal?.id,
+    //   ingredientType: ingredient.ingredientType,
+    // });
 
     res.status(201).send(ingredient);
   }

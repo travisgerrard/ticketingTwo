@@ -45,6 +45,7 @@ it('can fetch a list of comments for a meal', async () => {
 
   const response = await request(app)
     .get(`/api/comments/meal/${meal.id}`)
+    .set('Cookie', cookie)
     .send()
     .expect(200);
 

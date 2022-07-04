@@ -124,3 +124,17 @@ it('creates an ingredient with valid input linked to a meal, and increases order
   expect(ingredients[2].orderNumber).toEqual(2);
   expect(ingredients[3].orderNumber).toEqual(3);
 });
+
+// it('publishes an event', async () => {
+//   const title = 'asldkfj';
+
+//   await request(app)
+//     .post('/api/ingredients')
+//     .set('Cookie', global.signin())
+//     .send({
+//       title,
+//     })
+//     .expect(201);
+
+//   expect(natsWrapper.client.publish).toHaveBeenCalled();
+// });

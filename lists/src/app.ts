@@ -11,7 +11,6 @@ import { showIngredientsForMealRouter } from './routes/showForMeal';
 import { deleteIngredientRouter } from './routes/delete';
 import { decreaseIngredientOrderRouter } from './routes/decreaseOrderForMeal';
 import { increaseIngredientOrderRouter } from './routes/increaseOrderForMeal';
-import { addIngredientToListRouter } from './routes/addIngredientToList';
 
 const app = express();
 app.set('trust proxy', true);
@@ -25,7 +24,6 @@ app.use(
 
 app.use(currentUser);
 
-app.use(addIngredientToListRouter);
 app.use(indexIngredientRouter);
 app.use(createIngredientRouter);
 app.use(updateIngredientRouter);

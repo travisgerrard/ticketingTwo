@@ -81,3 +81,11 @@ build:
         manual:
           - src: 'src/***/*.ts'
             dest: .
+    - image: travisgerrard/lists
+      context: lists
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/***/*.ts'
+            dest: .

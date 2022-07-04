@@ -7,6 +7,8 @@ import {
   NotAuthorizedError,
 } from '@tgticketing/common';
 import { Ingredient } from '../models/ingredient';
+import { IngredientUpdatedPublisher } from '../events/publishers/ingredient-updated-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -34,6 +36,14 @@ router.put(
       ingredientType,
     });
     await ingredient.save();
+
+    // new IngredientUpdatedPublisher(natsWrapper.client).publish({
+    //   id: ingredient.id,
+    //   version: ingredient.version,
+    //   title: ingredient.title,
+    //   meal: ingredient.meal?.id,
+    //   ingredientType: ingredient.ingredientType,
+    // });
 
     res.send(ingredient);
   }
