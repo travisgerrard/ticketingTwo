@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import { app } from './app';
+import { IngredientAddToListListener } from './events/listeners/ingredient-addTo-list-listener';
 import { MealCreatedListener } from './events/listeners/meal-created-listener';
 import { MealUpdatedListener } from './events/listeners/meal-updated-listener';
 import { natsWrapper } from './nats-wrapper';
@@ -41,6 +42,7 @@ const start = async () => {
 
     new MealCreatedListener(natsWrapper.client).listen();
     new MealUpdatedListener(natsWrapper.client).listen();
+    new IngredientAddToListListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI, {});
     console.log('Connected to MongoDb');

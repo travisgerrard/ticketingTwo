@@ -28,9 +28,11 @@ router.post(
 
       orderNumber = (await Ingredient.find({ meal: mealId })).length;
 
-      if (!meal) {
-        throw new NotFoundError();
-      }
+      console.log(meal);
+
+      // if (!meal) {
+      //   throw new NotFoundError();
+      // }
     }
 
     // buld ingrednet and save to the database

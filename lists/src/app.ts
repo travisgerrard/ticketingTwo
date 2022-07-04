@@ -3,14 +3,7 @@ import 'express-async-errors';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError, currentUser } from '@tgticketing/common';
-import { createIngredientRouter } from './routes/new';
-import { indexIngredientRouter } from './routes';
-import { updateIngredientRouter } from './routes/update';
-import { showIngredientRouter } from './routes/show';
-import { showIngredientsForMealRouter } from './routes/showForMeal';
-import { deleteIngredientRouter } from './routes/delete';
-import { decreaseIngredientOrderRouter } from './routes/decreaseOrderForMeal';
-import { increaseIngredientOrderRouter } from './routes/increaseOrderForMeal';
+import { indexListRouter } from './routes';
 
 const app = express();
 app.set('trust proxy', true);
@@ -24,14 +17,7 @@ app.use(
 
 app.use(currentUser);
 
-app.use(indexIngredientRouter);
-app.use(createIngredientRouter);
-app.use(updateIngredientRouter);
-app.use(showIngredientRouter);
-app.use(showIngredientsForMealRouter);
-app.use(deleteIngredientRouter);
-app.use(decreaseIngredientOrderRouter);
-app.use(increaseIngredientOrderRouter);
+app.use(indexListRouter);
 
 app.all('*', async () => {
   throw new NotFoundError();

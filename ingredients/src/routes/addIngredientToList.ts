@@ -26,6 +26,7 @@ router.post(
       title: ingredient.title,
       meal: ingredient.meal?.id,
       ingredientType: ingredient.ingredientType,
+      currentUser: req.currentUser!.id,
     });
 
     res.send(ingredient);

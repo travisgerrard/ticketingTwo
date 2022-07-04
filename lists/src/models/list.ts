@@ -7,6 +7,7 @@ interface ListAttrs {
   title: string;
   ingredientType: IngredientType;
   meal: MealDoc;
+  creatorId: string;
 }
 
 export interface ListDoc extends mongoose.Document {
@@ -14,6 +15,7 @@ export interface ListDoc extends mongoose.Document {
   ingredientType: IngredientType;
   meal: MealDoc;
   version: number;
+  creatorId: string;
 }
 
 interface ListModel extends mongoose.Model<ListDoc> {
@@ -29,6 +31,10 @@ const listSchema = new mongoose.Schema(
     ingredientType: {
       type: String,
       enum: Object.values(IngredientType),
+    },
+    creatorId: {
+      type: String,
+      require: true,
     },
     meal: {
       type: mongoose.Schema.Types.ObjectId,

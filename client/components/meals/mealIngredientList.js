@@ -3,12 +3,13 @@ import useRequest from '../../hooks/use-request';
 
 export default function MealIngredientList({ ingredients, mealId }) {
   const [title, setTitle] = useState('');
+  const [addText, setAddText] = useState('add');
 
   const [ingredientIdToDelete, setIngredientIdToDelete] = useState('');
-
   const [ingredientIdToIncrease, setIngredientIdToIncrease] = useState('');
-
   const [ingredientIdToDecrease, setIngredientIdToDecrease] = useState('');
+  const [ingredientIdToAddToGroceryList, setIngredientIdToAddToGroceryList] =
+    useState('');
 
   const { doRequest: addIngredient, errors } = useRequest({
     url: '/api/ingredients',
@@ -75,6 +76,19 @@ export default function MealIngredientList({ ingredients, mealId }) {
       },
     });
 
+  const {
+    doRequest: addIngredientToGroceryList,
+    errors: addIngredientToGroceryListError,
+  } = useRequest({
+    url: `/api/ingredients/addIngredientToList/${ingredientIdToAddToGroceryList}`,
+    method: 'post',
+    body: {},
+    onSuccess: (event) => {
+      setAddText('✓');
+      setIngredientIdToAddToGroceryList('');
+    },
+  });
+
   const onSubmit = (event) => {
     event.preventDefault();
 
@@ -99,6 +113,12 @@ export default function MealIngredientList({ ingredients, mealId }) {
     }
   }, [ingredientIdToDelete]);
 
+  useEffect(() => {
+    if (ingredientIdToAddToGroceryList !== '') {
+      addIngredientToGroceryList();
+    }
+  }, [ingredientIdToAddToGroceryList]);
+
   const ingredientList = ingredients.map((ingredient) => {
     return (
       <li
@@ -122,6 +142,15 @@ export default function MealIngredientList({ ingredients, mealId }) {
             }}
           >
             ↓
+          </span>
+          {'  '}
+          <span
+            className="badge bg-success rounded-pill btn"
+            onClick={() => {
+              setIngredientIdToAddToGroceryList(ingredient.id);
+            }}
+          >
+            {addText}
           </span>
           {'  '}
           <span

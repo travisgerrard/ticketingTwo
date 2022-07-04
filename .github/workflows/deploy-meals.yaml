@@ -1,10 +1,10 @@
 name: deploy-meals
 
-on: 
+on:
   push:
     branches:
       - main
-    paths: 
+    paths:
       - 'meals/**'
 
 jobs:
@@ -23,4 +23,3 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl kubernetes cluster kubeconfig save veggily
       - run: kubectl rollout restart deployment meals-depl
-            
