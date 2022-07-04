@@ -4,7 +4,7 @@ deploy:
   kubectl:
     manifests:
       - ./infra/k8s/*
-      - ./infra/k8s/k8s-dev/*
+      - ./infra/k8s-dev/*
 build:
   local:
     push: false
@@ -51,6 +51,22 @@ build:
             dest: .
     - image: travisgerrard/payments
       context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/***/*.ts'
+            dest: .
+    - image: travisgerrard/meals
+      context: meals
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/***/*.ts'
+            dest: .
+    - image: travisgerrard/ingredients
+      context: ingredients
       docker:
         dockerfile: Dockerfile
       sync:
