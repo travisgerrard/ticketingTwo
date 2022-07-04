@@ -5,10 +5,8 @@ import {
 } from '@tgticketing/common';
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { MealCreatedPublisher } from '../events/publishers/meal-created-publisher';
 import { Ingredient } from '../models/ingredient';
 import { Meal } from '../models/meal';
-import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 

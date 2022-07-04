@@ -45,6 +45,13 @@ spec:
                 name: ingredients-srv
                 port:
                   number: 3000
+          - path: /api/comments/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: comments-srv
+                port:
+                  number: 3000
           - path: /api/users/?(.*)
             pathType: Prefix
             backend:
