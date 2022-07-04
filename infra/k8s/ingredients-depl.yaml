@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingredients-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ingredients
+  template:
+    metadata:
+      labels:
+        app: ingredients
+    spec:
+      containers:
+        - name: ingredients
+          image: travisgerrard/ingredients
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: MONGO_URI
+              value: 'mongodb://ingredients-mongo-srv:27017/ingredients'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingredients-srv
+spec:
+  selector:
+    app: ingredients
+  ports:
+    - name: ingredients
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

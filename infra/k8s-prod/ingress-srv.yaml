@@ -31,6 +31,20 @@ spec:
                 name: orders-srv
                 port:
                   number: 3000
+          - path: /api/meals/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: meals-srv
+                port:
+                  number: 3000
+          - path: /api/ingredients/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: ingredients-srv
+                port:
+                  number: 3000
           - path: /api/users/?(.*)
             pathType: Prefix
             backend:
