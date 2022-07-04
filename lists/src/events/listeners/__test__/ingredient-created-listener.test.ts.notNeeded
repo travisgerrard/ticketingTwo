@@ -1,0 +1,99 @@
+import { Message } from 'node-nats-streaming';
+import mongoose from 'mongoose';
+import { natsWrapper } from '../../../nats-wrapper';
+import { Meal } from '../../../models/meal';
+import { IngredientCreatedListener } from '../ingredient-created-listener';
+import { IngredientCreatedEvent, IngredientType } from '@tgticketing/common';
+import { Ingredient } from '../../../models/ingredient';
+
+const setupWithMeal = async () => {
+  const listener = new IngredientCreatedListener(natsWrapper.client);
+
+  const meal = Meal.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'tofu bake',
+  });
+  await meal.save();
+
+  const data: IngredientCreatedEvent['data'] = {
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'ingredient one',
+    ingredientType: IngredientType.None,
+    meal: meal!.id,
+    version: 0,
+  };
+
+  // create fake message object
+  // @ts-ignore
+  const msg: Message = {
+    ack: jest.fn(),
+  };
+
+  return { listener, data, msg };
+};
+const setupWithOutMeal = async () => {
+  const listener = new IngredientCreatedListener(natsWrapper.client);
+
+  let meal: any;
+
+  const data: IngredientCreatedEvent['data'] = {
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'ingredient one',
+    ingredientType: IngredientType.None,
+    meal,
+    version: 0,
+  };
+
+  // create fake message object
+  // @ts-ignore
+  const msg: Message = {
+    ack: jest.fn(),
+  };
+
+  return { listener, data, msg };
+};
+
+it('creates and saves an ingredient with meal', async () => {
+  const { listener, data, msg } = await setupWithMeal();
+
+  // call onMessage where ingredient is created
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure an ingredient was created
+  const ingredient = await Ingredient.findById(data.id);
+
+  expect(ingredient).toBeDefined();
+  expect(ingredient!.title).toEqual(data.title);
+});
+
+it('acks the message with meal', async () => {
+  const { listener, data, msg } = await setupWithMeal();
+
+  // call onMessage
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure ack fybctuib is called
+  expect(msg.ack).toHaveBeenCalled();
+});
+it('creates and saves an ingredient without meal', async () => {
+  const { listener, data, msg } = await setupWithOutMeal();
+
+  // call onMessage where ingredient is created
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure an ingredient was created
+  const ingredient = await Ingredient.findById(data.id);
+
+  expect(ingredient).toBeDefined();
+  expect(ingredient!.title).toEqual(data.title);
+});
+
+it('acks the message without meal', async () => {
+  const { listener, data, msg } = await setupWithOutMeal();
+
+  // call onMessage
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure ack fybctuib is called
+  expect(msg.ack).toHaveBeenCalled();
+});

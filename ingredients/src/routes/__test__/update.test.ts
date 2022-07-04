@@ -87,3 +87,24 @@ it('updates the meal provided valid inputs', async () => {
 
   expect(ingredientResponse.body.title).toEqual('new title');
 });
+
+// it('publishes an event', async () => {
+//   const cookie = global.signin();
+
+//   const response = await request(app)
+//     .post(`/api/ingredients/`)
+//     .set('Cookie', cookie)
+//     .send({
+//       title: 'asfasdf',
+//     });
+
+//   await request(app)
+//     .put(`/api/ingredients/${response.body.id}`)
+//     .set('Cookie', cookie)
+//     .send({
+//       title: 'new title',
+//     })
+//     .expect(200);
+
+//   expect(natsWrapper.client.publish).toHaveBeenCalledTimes(2);
+// });

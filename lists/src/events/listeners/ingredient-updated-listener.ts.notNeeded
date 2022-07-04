@@ -1,0 +1,40 @@
+import {
+  Listener,
+  Subjects,
+  IngredientUpdatedEvent,
+} from '@tgticketing/common';
+import { Message } from 'node-nats-streaming';
+import { Ingredient } from '../../models/ingredient';
+import { Meal } from '../../models/meal';
+import { queueGroupName } from './queue-group-name';
+
+export class IngredientUpdatedListener extends Listener<IngredientUpdatedEvent> {
+  readonly subject = Subjects.IngredientUpdated;
+  queueGroupName = queueGroupName;
+
+  async onMessage(data: IngredientUpdatedEvent['data'], msg: Message) {
+    const ingredient = await Ingredient.findByEvent(data);
+
+    if (!ingredient) {
+      throw new Error('Ingredient not found');
+    }
+
+    const { title, ingredientType, meal } = data;
+
+    const mealToAssociate = await Meal.findById(meal);
+
+    let mealToFile: any;
+    if (mealToAssociate) {
+      mealToFile = mealToAssociate;
+    }
+
+    ingredient.set({
+      title,
+      ingredientType,
+      meal: mealToFile,
+    });
+    await ingredient.save();
+
+    msg.ack();
+  }
+}

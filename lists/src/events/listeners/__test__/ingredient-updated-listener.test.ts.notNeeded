@@ -1,0 +1,118 @@
+import { Message } from 'node-nats-streaming';
+import mongoose from 'mongoose';
+import { natsWrapper } from '../../../nats-wrapper';
+import { Meal } from '../../../models/meal';
+import { IngredientType, IngredientUpdatedEvent } from '@tgticketing/common';
+import { Ingredient } from '../../../models/ingredient';
+import { IngredientUpdatedListener } from '../ingredient-updated-listener';
+
+const setupWithMeal = async () => {
+  const listener = new IngredientUpdatedListener(natsWrapper.client);
+
+  const meal = Meal.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'tofu bake',
+  });
+  await meal.save();
+
+  const ingredient = Ingredient.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'new ingredient',
+    meal: meal,
+    ingredientType: IngredientType.None,
+  });
+  await ingredient.save();
+
+  const data: IngredientUpdatedEvent['data'] = {
+    id: ingredient.id,
+    title: 'ingredient updated',
+    ingredientType: ingredient.ingredientType,
+    meal: ingredient.meal?.id,
+    version: ingredient.version + 1,
+  };
+
+  // create fake message object
+  // @ts-ignore
+  const msg: Message = {
+    ack: jest.fn(),
+  };
+
+  return { listener, data, msg, ingredient };
+};
+
+const setupWithOutMeal = async () => {
+  const listener = new IngredientUpdatedListener(natsWrapper.client);
+
+  let meal: any;
+
+  const ingredient = Ingredient.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: 'new ingredient',
+    meal: meal,
+    ingredientType: IngredientType.None,
+  });
+  await ingredient.save();
+
+  const data: IngredientUpdatedEvent['data'] = {
+    id: ingredient.id,
+    title: 'ingredient updated',
+    ingredientType: ingredient.ingredientType,
+    meal: ingredient.meal?.id,
+    version: ingredient.version + 1,
+  };
+
+  // create fake message object
+  // @ts-ignore
+  const msg: Message = {
+    ack: jest.fn(),
+  };
+
+  return { listener, data, msg, ingredient };
+};
+
+it('finds, updates and and saves an ingredient with meal', async () => {
+  const { listener, data, msg, ingredient } = await setupWithMeal();
+
+  // call onMessage where ingredient is created
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure an ingredient was updated
+  const updateIngredient = await Ingredient.findById(ingredient.id);
+
+  expect(updateIngredient!.title).toEqual(data.title);
+  expect(updateIngredient!.version).toEqual(data.version);
+});
+
+it('acks the message with meal', async () => {
+  const { listener, data, msg } = await setupWithMeal();
+
+  // call onMessage
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure ack fybctuib is called
+  expect(msg.ack).toHaveBeenCalled();
+});
+
+it('finds, updates and and saves an ingredient without meal', async () => {
+  const { listener, data, msg, ingredient } = await setupWithOutMeal();
+
+  // call onMessage where ingredient is created
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure an ingredient was created
+  // write assertions to makes ure an ingredient was updated
+  const updateIngredient = await Ingredient.findById(ingredient.id);
+
+  expect(updateIngredient!.title).toEqual(data.title);
+  expect(updateIngredient!.version).toEqual(data.version);
+});
+
+it('acks the message without meal', async () => {
+  const { listener, data, msg } = await setupWithOutMeal();
+
+  // call onMessage
+  await listener.onMessage(data, msg);
+
+  // write assertions to makes ure ack fybctuib is called
+  expect(msg.ack).toHaveBeenCalled();
+});

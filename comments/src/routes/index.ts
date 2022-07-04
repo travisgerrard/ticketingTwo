@@ -1,10 +1,24 @@
+import { requireAuth } from '@tgticketing/common';
 import express, { Request, Response } from 'express';
 import { Comment } from '../models/comment';
 
 const router = express.Router();
 
 router.get('/api/comments/meal/:id', async (req: Request, res: Response) => {
-  const comments = await Comment.find({ meal: req.params.id });
+  if (!req.currentUser) {
+    return res.send([
+      {
+        id: '12345',
+        comment: 'Need to sign in to see comment',
+        date: new Date(),
+      },
+    ]);
+  }
+
+  const comments = await Comment.find({
+    meal: req.params.id,
+    creatorId: req.currentUser!.id,
+  });
 
   res.send(comments);
 });
