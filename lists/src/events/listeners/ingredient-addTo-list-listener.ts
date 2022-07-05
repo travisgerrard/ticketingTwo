@@ -17,8 +17,6 @@ export class IngredientAddToListListener extends Listener<IngredientAddedToListE
   async onMessage(data: IngredientAddedToListEvent['data'], msg: Message) {
     const { title, ingredientType, meal, currentUser } = data;
 
-    console.log(meal);
-
     const mealToAssociate = await Meal.findOne({ id: meal });
 
     if (!mealToAssociate) {
@@ -30,6 +28,7 @@ export class IngredientAddToListListener extends Listener<IngredientAddedToListE
       ingredientType,
       meal: mealToAssociate,
       creatorId: currentUser,
+      isCompleted: false,
     });
     await list.save();
 

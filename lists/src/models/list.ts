@@ -8,6 +8,7 @@ interface ListAttrs {
   ingredientType: IngredientType;
   meal: MealDoc;
   creatorId: string;
+  isCompleted: boolean;
 }
 
 export interface ListDoc extends mongoose.Document {
@@ -15,6 +16,7 @@ export interface ListDoc extends mongoose.Document {
   ingredientType: IngredientType;
   meal: MealDoc;
   version: number;
+  isCompleted: boolean;
   creatorId: string;
 }
 
@@ -35,6 +37,11 @@ const listSchema = new mongoose.Schema(
     creatorId: {
       type: String,
       require: true,
+    },
+    isCompleted: {
+      type: Boolean,
+      require: true,
+      default: false,
     },
     meal: {
       type: mongoose.Schema.Types.ObjectId,
